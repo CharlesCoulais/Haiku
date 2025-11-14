@@ -1,0 +1,319 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=WDXL+Lubrifont+JP+N&display=swap');
+
+:root {
+    --primary-color: #0088aa;
+    --darker-primary-color: #004455;
+    --secondary-color: #e50;
+    --tertiary-color: #eeaa00;
+}
+
+
+html, body {
+    background-color: #ddd;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+
+    -webkit-font-smoothing : antialiased;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+    background: transparent url(https://lettyou.com/wp-content/uploads/2021/12/les-peintures-mirifiques-de-james-jean-1.jpeg) no-repeat center center / cover;
+}
+.app-logo {
+    margin-right: auto;
+    padding: 4px 8px;
+    color: #fffc;
+    font-size: 24px;
+    font-family: "WDXL Lubrifont JP N", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: .05em;
+    text-align: center;
+}
+.app-logo .nb {
+    display: block;
+    font-weight: 200;
+    font-size: 10px;
+    letter-spacing: .1em;
+    font-family: roboto;
+    color: #fff;
+}
+.header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: var(--darker-primary-color);
+    width: 100%;
+    min-height: 42px;
+    padding: 0 8px;
+    box-sizing: border-box;
+}
+.header button {
+    width: 42px;
+    height: 100%;
+    background-color: var(--darker-primary-color);
+    border-width: 0;
+    cursor:pointer;
+    color: var(--tertiary-color);
+}
+.header button svg {
+    width: 24px;
+}
+.header button:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+.layout.fullscreen header .buttonfullscreen-bt,
+.header button:active,
+.header button.active {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+}
+.body {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+}
+.foldable {
+    width: 312px;
+    height: 100%;
+    margin-right: 24px;
+    position: relative;
+    transition: width .7s;
+}
+.foldable > div {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-end;
+}
+.foldable.fold {
+    width: 0;
+}
+.fold-bt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 24px;
+    border-width: 0;
+    position: absolute;
+    right: -24px;
+    top: 0;
+    background-color: #fff5;
+    cursor: pointer;
+    transition: background-color .7s, background-position .7s;
+
+    background: #fff5 url(https://lettyou.com/wp-content/uploads/2021/12/les-peintures-mirifiques-de-james-jean-1.jpeg) no-repeat center center;
+    background-size: cover;
+    background-attachment: local;
+    background-blend-mode: lighten;
+}
+.fold-bt:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-right-color: #fff8;
+    position: relative;
+    right: 5px;
+    transform: rotateZ(0);
+    transform-origin: 15px;
+    transition: transform .7s, border-color .7s;
+}
+.fold-bt:hover {
+    background-color: #fffd;
+}
+.foldable.fold .fold-bt:hover:before,
+.fold-bt:hover:before {
+    border-right-color: var(--primary-color);
+}
+
+.foldable.fold .fold-bt {
+    background-color: #fff8;
+    background-position: center left 0;
+}
+.foldable.fold .fold-bt:before {
+    transform: rotateZ(180deg);
+    border-right-color: #fff;
+}
+.aside {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 312px;
+    height: 100%;
+    padding: 20px 10px;
+    box-sizing: border-box;
+    position: relative;
+    position: relative;
+    transition: left .7s;
+}
+.aside:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -42px;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+
+    background: #eeed url(https://lettyou.com/wp-content/uploads/2021/12/les-peintures-mirifiques-de-james-jean-1.jpeg) no-repeat center center;
+    background-size: cover;
+    background-attachment: local;
+    background-blend-mode: lighten;
+
+    transition: background-position .7s, width .7s;
+}
+.fold .aside:before {
+    width: 100%;
+    background-position: center right 0;
+}
+.new-note-bt {
+    align-self: flex-end;
+    border-width: 0;
+    border-radius: 5px;
+    background-color: var(--darker-primary-color);
+    color: white;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    transition: background-color .5s;
+}
+.new-note-bt:hover {
+    background-color: var(--primary-color);
+}
+.new-note-bt:active {
+    top: 1px;
+}
+.note-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-height: 100%;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--darker-primary-color);
+    background-color: white;
+    overflow: auto;
+}
+.note-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 16px;
+    background-color: white;
+    position: relative;
+}
+.note-item:hover {
+    background-color: #fffa;
+    cursor: pointer;
+}
+.note-item + .note-item {
+    border-top: 1px dotted #555;
+}
+.note-item.current {
+    border: 1px solid var(--primary-color);
+    cursor: default;
+}
+.note-item.empty .note-title {
+    color: grey;
+    font-style: italic;
+    font-weight: normal;
+}
+.note-item.current .note-title  {
+    color: var(--primary-color);
+}
+.note-title {
+    display: inline-block;
+    max-width: 200px;
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: var(--darker-primary-color);
+}
+.note-modified-date {
+    font-size: 12px;
+    color: var(--secondary-color);
+    font-style: italic;
+}
+.note-delete-bt {
+    width: 32px;
+    height: 32px;
+    border-width: 0;
+    border-radius: 50%;
+    background: transparent url(./images/trash.svg) no-repeat center center / 18px auto;
+    position: absolute;
+    top: 18px;
+    right: 12px;
+    opacity: 0;
+    cursor: pointer;
+    transition: all .5s;
+    border: 1px solid var(--secondary-color);
+}
+.note-item:hover .note-delete-bt {
+    opacity: .5;
+}
+.note-item:hover .note-delete-bt:hover {
+    opacity: 1;
+    background-color: var(--secondary-color);
+    top: 0;
+    right: 0;
+    width: 72px;
+    height: 100%;
+    border-radius: 0;
+    background-size: 28px auto;
+}
+.note-item.temp .note-delete-bt,
+.note-item.temp:hover .note-delete-bt {
+    display: none;
+}
+.page-wrapper {
+    width: 100%;
+    height: 100%;
+    padding: 64px 0 0;
+    box-sizing: border-box;
+    overflow: auto;
+}
+.page {
+    width: 768px;
+    min-height: 100%;
+    background-color: #fffffff3;
+    margin: 0 auto;
+    padding: 64px;
+    box-sizing: border-box;
+    font-family: Tahoma, sans-serif;
+    font-size: 24px;
+    line-height: 1.4;
+}
+.page:focus {
+  outline-color: var(--primary-color);
+}
+.page.unavailable {
+    min-height: 50%;
+    background: linear-gradient(#3338, #0000);
+    pointer-events: none;
+}
+.title {
+    font-size: 32px;
+    font-weight: bold;
+}

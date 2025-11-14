@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --primary-color: #0088aa;
+    --primary-hover-color: #0088aa11;
+    --darker-primary-color: #004455;
+    --secondary-color: #e50;
+    --tertiary-color: #eeaa00;
+}
+
+
+html, body {
+    background-color: #ddd;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+
+    -webkit-font-smoothing : antialiased;
+}
+
+.app {
+    height: 100%;
+}
+.header,
+.foldable {
+  display: none;
+}
