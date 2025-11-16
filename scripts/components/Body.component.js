@@ -9,7 +9,7 @@ class BodyComponent {
   constructor() {
     this.#element = BodyComponent.#tpl.cloneNode(true);
     
-    this.#element.replaceChildren(
+    this.#element.querySelector('.body-wrapper').replaceChildren(
       new FoldableComponent(),
       new EditorComponent(),
     );
