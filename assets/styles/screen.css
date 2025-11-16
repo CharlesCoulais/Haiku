@@ -292,7 +292,7 @@ a {
     height: 32px;
     border-width: 0;
     border-radius: 50%;
-    background: transparent url(./images/trash.svg) no-repeat center center / 18px auto;
+    background: transparent url(../images/trash.svg) no-repeat center center / 18px auto;
     position: absolute;
     top: 18px;
     right: 12px;
