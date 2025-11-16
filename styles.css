@@ -5,6 +5,8 @@
     --darker-primary-color: #004455;
     --secondary-color: #e50;
     --tertiary-color: #eeaa00;
+
+    --bg-img: url("https://images.squarespace-cdn.com/content/v1/5484b3b4e4b0883e5fe5efa4/1429486385687-UEGZG4YVGOUHYQDRB35O/adrift-final-webres.jpg?format=2500w");
 }
 
 
@@ -31,7 +33,7 @@ a {
     flex-direction: column;
     justify-content: flex-start;
     height: 100%;
-    background: transparent url(https://images.squarespace-cdn.com/content/v1/5484b3b4e4b0883e5fe5efa4/1429486385687-UEGZG4YVGOUHYQDRB35O/adrift-final-webres.jpg?format=2500w) no-repeat center center / cover;
+    background: transparent var(--bg-img) no-repeat center center / cover;
 }
 .app-logo {
     margin-right: auto;
@@ -147,7 +149,7 @@ a {
     cursor: pointer;
     transition: background-color .7s, background-position .7s;
 
-    background: #fff5 url(https://images.squarespace-cdn.com/content/v1/5484b3b4e4b0883e5fe5efa4/1429486385687-UEGZG4YVGOUHYQDRB35O/adrift-final-webres.jpg?format=2500w) no-repeat center center;
+    background: #fff5 var(--bg-img) no-repeat center center;
     background-size: cover;
     background-attachment: local;
     background-blend-mode: lighten;
@@ -203,7 +205,7 @@ a {
     height: 100vh;
     box-sizing: border-box;
 
-    background: #eeed url(https://images.squarespace-cdn.com/content/v1/5484b3b4e4b0883e5fe5efa4/1429486385687-UEGZG4YVGOUHYQDRB35O/adrift-final-webres.jpg?format=2500w) no-repeat center center;
+    background: #eeed var(--bg-img) no-repeat center center;
     background-size: cover;
     background-attachment: local;
     background-blend-mode: lighten;
