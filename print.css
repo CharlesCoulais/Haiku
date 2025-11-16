@@ -28,6 +28,16 @@ html, body {
     height: 100%;
 }
 .header,
-.foldable {
+.foldable,
+.credits {
   display: none;
+}
+
+.page {
+    font-size: 12pt;
+    line-height: 1.4em;
+}
+.page .title {
+    font-size: 16pt;
+    font-weight: 600;
 }
