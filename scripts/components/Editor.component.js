@@ -49,22 +49,19 @@ class EditorComponent {
   }
 
   #formatHtmlText() {
-    console.log('format');
     const pageEl = this.#element.querySelector('.page');
-    const nodeIterator = document.createNodeIterator(pageEl, NodeFilter.SHOW_ELEMENT);
-    let el = nodeIterator.nextNode();
+    const nodeIterator = document.createNodeIterator(
+      pageEl,
+      NodeFilter.SHOW_ELEMENT,
+      el => el !== pageEl
+        && el.nodeName.toLowerCase() === 'div'
+        && !!el.textContent.trim()
+    );
+    let el;
     
     while (el = nodeIterator.nextNode()) {
-        el.className = '';
-      const nodeName = el.nodeName.toLowerCase();
-      if (nodeName === 'div' && !!el.textContent.trim()) {
-        el.className = 'text';
-        el.removeAttribute('style')
-      } else if (nodeName === 'br') {
-        
-      } else {
-        el.replaceWith(...el.childNodes);
-      }
+      el.className = 'text';
+      el.removeAttribute('style');
     }
     pageEl.querySelector('div.text')?.classList?.add('title');
   }
