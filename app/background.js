@@ -8,7 +8,8 @@ chrome.action.onClicked.addListener(async () => {
         chrome.tabs.update(openedTab.id, { active: true });
     }
     else {
-        const url = chrome.runtime.getURL('index.html');
+        const baseUrl = chrome.runtime.getManifest().background.baseUrl || '';
+        const url = chrome.runtime.getURL(`${baseUrl}index.html`);
         chrome.tabs.create({ url });
     }
 });
