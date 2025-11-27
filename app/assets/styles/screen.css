@@ -313,6 +313,7 @@ a {
     height: 100%;
     border-radius: 0;
     background-size: 28px auto;
+    transition-delay: .5s;
 }
 .note-item.temp .note-delete-bt,
 .note-item.temp:hover .note-delete-bt {
