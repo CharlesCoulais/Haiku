@@ -7,6 +7,7 @@ export default {
 		format: 'iife',
     compact: true,
     minifyInternalExports: true,
-		plugins: [terser()]
+		plugins: [terser()],
+		sourcemap: true,
 	}
 };
