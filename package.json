@@ -1,4 +1,5 @@
 {
+  "name": "haiku",
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4"
   },

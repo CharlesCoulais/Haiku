@@ -1,0 +1,13 @@
+{
+  "name": "Haïku Notebook",
+  "description": "Write notes in browser",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_title": "Ouvrir le notebook"
+  },
+  "permissions": ["activeTab", "scripting"],
+  "background": {
+    "service_worker": "app/background.js"
+  }
+}
