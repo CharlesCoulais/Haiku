@@ -5,7 +5,7 @@ import StorageItem from '../libs/storage.js';
 
 const COLLECTION_ITEM = 'noteList';
 
-class NoteCollectionModel {
+class SessionGarbageModel {
   #subscribers = new SubscriberCollection();
   #storageItem;
   #data = [];
@@ -17,16 +17,9 @@ class NoteCollectionModel {
   constructor() {
     this.#storageItem = new StorageItem(localStorage, COLLECTION_ITEM, []);
     this.#data = this.#storageItem.value;
-    this.#data.forEach(noteId => this.#subscribeToNoteChanges(noteId));
-
-    NoteModel.onNewId(noteId => this.addNoteId(noteId));
   }
 
-  map(fn) {
-    return this.#data.map(fn);
-  }
-
-  getLastModified() {
+  getLastDeleted() {
     if (!this.#data.length) {
       return null;
     }
@@ -48,31 +41,18 @@ class NoteCollectionModel {
     const noteModel = NoteModel.getInstance(noteId);
     noteModel.subscribe(({ type }, blockBroadcast) => {
       switch (type) {
-        case 'refresh':
-        case 'change':
-          this.putNoteOnTop(noteId, blockBroadcast);
-          break;
-        case 'delete':
-          this.removeNote(noteId, blockBroadcast);
+        case 'recover':
+          this.recoverNote(noteId, blockBroadcast);
           break;
       }
     });
   }
 
-  putNoteOnTop(noteId, blockBroadcast = false) {
-    this.#data = [
-      noteId,
-      ...this.#data.filter(id => id !== noteId),
-    ];
-    this.#save();
-    this.#subscribers.emit({ type: 'change', noteId }, blockBroadcast);
-  }
-
-  removeNote(noteId, blockBroadcast = false) {
-    this.#subscribers.emit({ type: 'beforeRemove', noteId }, blockBroadcast);
+  recoverNote(noteId, blockBroadcast = false) {
+    this.#subscribers.emit({ type: 'beforeRecover', noteId }, blockBroadcast);
     this.#data = this.#data.filter(id => id !== noteId);
     this.#save();
-    this.#subscribers.emit({ type: 'remove', noteId }, blockBroadcast);
+    this.#subscribers.emit({ type: 'recover', noteId }, blockBroadcast);
   }
 
   #save() {
@@ -83,10 +63,10 @@ class NoteCollectionModel {
 
   static getInstance() {
     if (!this.#instance) {
-      this.#instance = new NoteCollectionModel();
+      this.#instance = new SessionGarbageModel();
     }
     return this.#instance;
   }
 }
 
-export default NoteCollectionModel;
+export default SessionGarbageModel;

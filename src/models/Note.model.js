@@ -1,12 +1,12 @@
  import { SubscriberCollection } from '../libs/observable.js';
- import Storage from '../libs/storage.js';
+ import StorageItem from '../libs/storage.js';
 
 
  const LAST_ID_ITEM = 'lastId';
 
 class NoteModel {
   #subscribers = new SubscriberCollection();
-  #localStorageItem;
+  #storageItem;
   #data;
   #id;
 
@@ -66,10 +66,10 @@ class NoteModel {
   constructor(noteId = null) {
     this.#id = noteId;
     if (noteId !== null) {
-      this.#localStorageItem = Storage.getItem(noteId);
+      this.#storageItem = new StorageItem(localStorage, noteId);
       this.#data = {
-        content: this.#localStorageItem.value?.content,
-        modified: this.#localStorageItem.value?.modified,
+        content: this.#storageItem.value?.content,
+        modified: this.#storageItem.value?.modified,
       };
     } else {
       this.#data = {
@@ -80,13 +80,13 @@ class NoteModel {
   }
 
   refresh(blockBroadcast = false) {
-    if (!this.#localStorageItem) {
+    if (!this.#storageItem) {
       return;
     }
-    this.#localStorageItem.refresh();
+    this.#storageItem.refresh();
     this.#data = {
-      content: this.#localStorageItem.value?.content,
-      modified: this.#localStorageItem.value?.modified,
+      content: this.#storageItem.value?.content,
+      modified: this.#storageItem.value?.modified,
     };
     this.#subscribers.emit({ type: 'refresh', data: { ...this.#data } }, blockBroadcast);
   }
@@ -101,8 +101,8 @@ class NoteModel {
     }
     const data = { ...this.#data };
     this.#data = null;
-    this.#subscribers.emit({ type: 'beforeDelete', data: { ...this.#data } }, blockBroadcast);
-    this.#localStorageItem?.delete();
+    this.#subscribers.emit({ type: 'beforeDelete', data }, blockBroadcast);
+    this.#storageItem?.delete();
     this.#subscribers.emit({ type: 'delete', data: null }, blockBroadcast);
     this.#subscribers.destroy();
     this.#subscribers = null;
@@ -122,25 +122,25 @@ class NoteModel {
   }
 
   #save() {
-    const existsInStorage = (this.#id !== null);
-    if (!existsInStorage) {
-      const lastIdItem = Storage.getItem(LAST_ID_ITEM, 0);
+    const savedInStorage = (this.#id !== null);
+    if (!savedInStorage) {
+      const lastIdItem = new StorageItem(localStorage, LAST_ID_ITEM, 0);
       this.#id = ++lastIdItem.value;
-      this.#localStorageItem = Storage.getItem(this.#id);
+      this.#storageItem = new StorageItem(localStorage, this.#id);
       NoteModel.#collection[this.#id] = this;
       NoteModel.#onNewIdSubs.emit(this.#id);
     }
-    this.#localStorageItem.value = { ...this.#data };
-    // If it juct created the id in storage, does not send broadcast 'change' message:
+    this.#storageItem.value = { ...this.#data };
+    // If it just created the id in storage, does not send broadcast 'change' message:
     // the channel already sent a 'create' message.
-    this.#subscribers.emit({ type: 'change', data: { ...this.#data } }, !existsInStorage);
+    this.#subscribers.emit({ type: 'change', data: { ...this.#data } }, !savedInStorage);
   }
 
 
   static #onNewIdSubs = new SubscriberCollection();
   static #collection = {};
 
-  static getInstance(noteId) {
+  static getInstance(noteId = null) {
     if (noteId === null) {
       return new NoteModel(null);
     }
