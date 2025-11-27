@@ -69,6 +69,10 @@ class NoteItemComponent {
     this.#element.addEventListener('click', e =>  currentNote$.set(this.#noteModel$));
     this.#element.querySelector('.note-delete-bt').addEventListener('click', e => {
       e.stopPropagation();
+      const doDelete = confirm('Êtes vous sûr de vouloir supprimer cette note ?');
+      if (!doDelete) {
+        return;
+      }
       this.#noteModel$.delete();
     });
   }
