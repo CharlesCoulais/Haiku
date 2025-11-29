@@ -1,17 +1,16 @@
 import NoteCollectionModel from "../models/NoteCollection.model.js";
 import NoteItemComponent from "./NoteItem.component.js";
 import { currentNote$ } from "../app.state.js";
+import htmlToDom from "../utils/htmlToDOM.js";
+import template from  "./NoteList.template.html";
 
 
 
 class NoteListComponent {
-  static #tpl = document.getElementById('noteListTpl').content.firstElementChild;
-
+  #element = htmlToDom(template);
   #collectionModel$ = NoteCollectionModel.getInstance();
-  #element = null;
 
   constructor() {
-    this.#element = NoteListComponent.#tpl.cloneNode(true);
     this.#render();
     this.#setEventListeners();
 

@@ -1,13 +1,13 @@
 import { currentNote$ } from "../app.state.js";
+import htmlToDom from "../utils/htmlToDOM.js";
+import template from "./Header.template.html";
 
 
 class HeaderComponent {
-  static #tpl = document.getElementById('headerTpl').content.firstElementChild;
-  #element = null;
+  #element = htmlToDom(template);
   #objectUrl = null;
 
   constructor() {
-    this.#element = HeaderComponent.#tpl.cloneNode(true);
     this.#setEventListeners();
     return this.#element;
   }

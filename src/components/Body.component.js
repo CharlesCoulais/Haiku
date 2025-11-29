@@ -1,14 +1,12 @@
 import EditorComponent from "./Editor.component.js";
 import FoldableComponent from "./Foldable.component.js";
-
+import htmlToDom from "../utils/htmlToDOM.js";
+import template from  "./Body.template.html";
 
 class BodyComponent {
-  static #tpl = document.getElementById('bodyTpl').content.firstElementChild;
-  #element = null;
+  #element = htmlToDom(template);
 
   constructor() {
-    this.#element = BodyComponent.#tpl.cloneNode(true);
-    
     this.#element.querySelector('.body-wrapper').replaceChildren(
       new FoldableComponent(),
       new EditorComponent(),

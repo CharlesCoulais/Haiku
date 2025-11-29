@@ -1,11 +1,12 @@
 import NoteModel from "../models/Note.model.js";
 import { currentNote$ } from "../app.state.js";
+import htmlToDom from "../utils/htmlToDOM.js";
+import template from  "./NoteItem.template.html";
 
 
 class NoteItemComponent {
-  static #tpl = document.getElementById('noteItemTpl').content.querySelector('.note-item');
+  #element = htmlToDom(template);
   #noteModel$ = null;
-  #element = NoteItemComponent.#tpl.cloneNode(true);
   #currentSub = null;
 
   constructor(noteId) {

@@ -1,13 +1,13 @@
 import { currentNote$ } from "../app.state.js";
+import htmlToDom from "../utils/htmlToDOM.js";
+import template from "./Editor.template.html";
 
 
 class EditorComponent {
-  static #tpl = document.getElementById('editorTpl').content.querySelector('.page-wrapper');
-  #element = null;
+  #element = htmlToDom(template);
   #noteSub = null;
 
   constructor() {
-    this.#element = EditorComponent.#tpl.cloneNode(true);
     this.#element.querySelector('.page').addEventListener('input', e =>  this.#saveNote());
     currentNote$.subscribe(() => this.openNote());
     this.openNote(currentNote$.value);

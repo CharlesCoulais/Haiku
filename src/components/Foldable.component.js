@@ -1,12 +1,12 @@
 import NoteListComponent from "./NoteList.component.js";
+import htmlToDom from "../utils/htmlToDOM.js";
+import template from "./Foldable.template.html";
 
 
 class FoldableComponent {
-  static #tpl = document.getElementById('foldableTpl').content.firstElementChild;
-  #element = null;
+  #element = htmlToDom(template);
 
   constructor() {
-    this.#element = FoldableComponent.#tpl.cloneNode(true);
     this.#render();
     this.#element.querySelector('.fold-bt').addEventListener('click', e => this.#switchFold());
 

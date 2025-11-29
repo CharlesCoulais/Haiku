@@ -1,13 +1,13 @@
 import BodyComponent from "./Body.component.js";
 import HeaderComponent from "./Header.component.js";
+import htmlToDom from "../utils/htmlToDOM.js";
+import template from  "./Layout.template.html";
 
 
 class LayoutComponent {
-  static #tpl = document.getElementById('layoutTpl').content.firstElementChild;
-  #element = null;
+  #element = htmlToDom(template);
 
   constructor() {
-    this.#element = LayoutComponent.#tpl.cloneNode(true);
     this.#render();
     this.#setEventListeners();
 
