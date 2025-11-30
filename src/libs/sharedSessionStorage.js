@@ -1,3 +1,4 @@
+const sharedItems = new Set();
 const channel = new BroadcastChannel('sharedSessionStorage');
 
 channel.onmessage = (msgEvent) => {
@@ -6,12 +7,17 @@ channel.onmessage = (msgEvent) => {
 
   switch (type) {
     case 'sync': {
-      channel.postMessage({ type: 'state', storage: JSON.stringify(sessionStorage) });
+      const data = {};
+      for (const key of sharedItems) {
+        data[key] = sessionStorage.getItem(key);
+      }
+      channel.postMessage({ type: 'state', storageData: JSON.stringify(data) });
       break;
     }
     case 'state': {
-      const data = JSON.parse(msgEvent.data.storage);
+      const data = JSON.parse(msgEvent.data.storageData);
       for (const key in data) {
+        sharedItems.add(key);
         sessionStorage.setItem(key, data[key]);
       }
       break;
@@ -20,6 +26,7 @@ channel.onmessage = (msgEvent) => {
       const { key, value } = msgEvent.data;
       const oldValue = sessionStorage.getItem(key);
       sessionStorage.setItem(key, value);
+      sharedItems.add(key);
       triggerStorageEvent(key, value, oldValue);
       break;
     }
@@ -27,6 +34,7 @@ channel.onmessage = (msgEvent) => {
       const { key } = msgEvent.data;
       const oldValue = sessionStorage.getItem(key);
       sessionStorage.removeItem(key);
+      sharedItems.delete(key);
       triggerStorageEvent(key, null, oldValue);
       break;
     }
@@ -50,21 +58,25 @@ function triggerStorageEvent(key, newValue, oldValue) {
 }
 
 const sharedSessionStorage = {
+
   get length() {
-    return sessionStorage.length;
+    return sharedItems.size;
   },
 
   getItem(key) {
+    if (!sharedItems.has(key)) {
+      return null;
+    }
     return sessionStorage.getItem(key);
   },
 
   setItem(key, value) {
-    value = value.toString();
     const oldValue = sessionStorage.getItem(key);
-    if (oldValue === value) {
+    if (oldValue === value.toString()) {
       return;
     }
-    sessionStorage.setItem(key, value);
+    sessionStorage.setItem(key, value.toString());
+    sharedItems.add(key);
     channel.postMessage({
       type: 'set',
       key,
@@ -74,10 +86,11 @@ const sharedSessionStorage = {
 
   removeItem(key) {
     const value = sessionStorage.getItem(key);
-    if (value === null) {
+    if (!sharedItems.has(key) || value === null) {
       return;
     }
     sessionStorage.removeItem(key);
+    sharedItems.delete(key);
     channel.postMessage({
       type: 'remove',
       key,
