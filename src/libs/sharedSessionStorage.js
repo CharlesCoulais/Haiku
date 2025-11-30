@@ -3,7 +3,7 @@ const channel = new BroadcastChannel('sharedSessionStorage');
 
 channel.onmessage = (msgEvent) => {
   const { type } = msgEvent.data;
-  //console.log('Channel Message received:', type);
+  console.log('Channel Message received:', type, msgEvent.data);
 
   switch (type) {
     case 'sync': {
@@ -72,7 +72,7 @@ const sharedSessionStorage = {
 
   setItem(key, value) {
     const oldValue = sessionStorage.getItem(key);
-    if (oldValue === value.toString()) {
+    if (sharedItems.has(key) && oldValue === value.toString()) {
       return;
     }
     sessionStorage.setItem(key, value.toString());
@@ -85,8 +85,7 @@ const sharedSessionStorage = {
   },
 
   removeItem(key) {
-    const value = sessionStorage.getItem(key);
-    if (!sharedItems.has(key) || value === null) {
+    if (!sharedItems.has(key)) {
       return;
     }
     sessionStorage.removeItem(key);
