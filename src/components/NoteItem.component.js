@@ -1,5 +1,5 @@
 import NoteModel from "../models/Note.model.js";
-import { currentNote$ } from "../app.state.js";
+import { currentNote$ } from "../services/app.state.js";
 import htmlToDom from "../utils/htmlToDOM.js";
 import template from  "./NoteItem.template.html";
 

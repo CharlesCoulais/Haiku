@@ -1,6 +1,6 @@
 import NoteCollectionModel from "../models/NoteCollection.model.js";
 import NoteItemComponent from "./NoteItem.component.js";
-import { currentNote$ } from "../app.state.js";
+import { currentNote$ } from "../services/app.state.js";
 import htmlToDom from "../utils/htmlToDOM.js";
 import template from  "./NoteList.template.html";
 

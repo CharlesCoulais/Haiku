@@ -1,4 +1,4 @@
-import { currentNote$ } from "../app.state.js";
+import { currentNote$ } from "../services/app.state.js";
 import htmlToDom from "../utils/htmlToDOM.js";
 import template from "./Header.template.html";
 
