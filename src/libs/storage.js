@@ -1,3 +1,5 @@
+import sharedSessionStorage from "./sharedSessionStorage";
+
 class StorageInterface {
   #natStorage;
 
@@ -6,7 +8,7 @@ class StorageInterface {
   }
 
   constructor(nativeStorage) {
-    this.#natStorage = nativeStorage
+    this.#natStorage = nativeStorage;
   }
 
   get(key) {
@@ -30,10 +32,23 @@ class StorageInterface {
   clear() {
     this.#natStorage.clear();
   }
+
+  onUpdate(key, callback) {
+    const listener = e => {
+      const matchEvent = (e.storageArea === this.#natStorage) && (e.key === key.toString());
+      if (matchEvent) {
+        callback(e);
+      }
+    };
+    window.addEventListener('storage', listener);
+    return () => window.removeEventListener('storage', listener);
+  }
 }
 
 const storageInterfaces = new Map([
-  [Storage, StorageInterface]
+  [localStorage, StorageInterface],
+  [sessionStorage, StorageInterface],
+  [sharedSessionStorage, StorageInterface],
 ]);
 
 class StorageItemCollection {
@@ -63,7 +78,7 @@ class StorageItemCollection {
   static #collections = new Map();
   static getInstance(nativeStorage) {
     if (!this.#collections.has(nativeStorage)) {
-      const StorageInterface = storageInterfaces.get(nativeStorage.constructor);
+      const StorageInterface = storageInterfaces.get(nativeStorage);
       const storage = new StorageInterface(nativeStorage);
       const collection = new StorageItemCollection(storage);
       this.#collections.set(nativeStorage, collection);
@@ -109,6 +124,7 @@ class StorageItem {
     this.#key = key;
     this.#defaultValue = defaultValueIfEmpty;
     collection.set(key, this);
+    this.#storage.onUpdate(this.#key, e => this.#onStorageEvent(e));
   }
 
   refresh() {
@@ -118,6 +134,17 @@ class StorageItem {
   delete() {
     this.#storage.remove(this.#key);
   }
+
+  #onStorageEvent(e) {
+    if (e.oldValue === null) {
+      console.log(key, 'create item');
+    } else if (e.newValue === null) {
+      console.log(key, 'delete item');
+    } else {
+      console.log(key, 'change');
+    }
+    this.refrech();
+  }
 }
 
 Object.defineProperty(StorageItem, 'EMPTY', {
@@ -126,4 +153,5 @@ Object.defineProperty(StorageItem, 'EMPTY', {
   value: Symbol('EMPTY'),
 });
 
-export default StorageItem ;
+export default StorageItem;
+
