@@ -1,6 +1,6 @@
-import { SubscriberCollection } from "./libs/observable.js";
-import NoteModel from "./models/Note.model.js";
-import NoteCollectionModel from "./models/NoteCollection.model.js";
+import { SubscriberCollection } from "../libs/observable.js";
+import NoteModel from "../models/Note.model.js";
+import NoteCollectionModel from "../models/NoteCollection.model.js";
 
 
 class CurrentNote {
