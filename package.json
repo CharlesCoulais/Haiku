@@ -1,11 +1,15 @@
 {
   "name": "haiku",
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",
     "rollup-plugin-html": "^0.2.1"
   },
   "scripts": {
     "watch": "rollup -c --watch",
     "build": "rollup -c"
+  },
+  "dependencies": {
+    "shibirx": "file:.yalc/shibirx"
   }
 }
