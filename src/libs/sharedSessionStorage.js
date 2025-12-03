@@ -1,9 +1,10 @@
 const sharedItems = new Set();
 const channel = new BroadcastChannel('sharedSessionStorage');
 
+
 channel.onmessage = (msgEvent) => {
   const { type } = msgEvent.data;
-  console.log('Channel Message received:', type, msgEvent.data);
+  //console.log('Channel Message received:', type, msgEvent.data);
 
   switch (type) {
     case 'sync': {

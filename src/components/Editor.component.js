@@ -1,4 +1,5 @@
-import { currentNote$ } from "../services/app.state.js";
+import { windowHasFocus } from "../observables/WindowFocus.js";
+import { currentNote$, focus$, haikuReady$ } from "../services/app.state.js";
 import htmlToDom from "../utils/htmlToDOM.js";
 import template from "./Editor.template.html";
 
@@ -11,7 +12,7 @@ class EditorComponent {
     this.#element.querySelector('.page').addEventListener('input', e =>  this.#saveNote());
     currentNote$.subscribe(() => this.openNote());
     this.openNote(currentNote$.value);
-    
+    focus$.subscribe(() => this.#focus());    
     return this.#element;
   }
 
@@ -31,8 +32,24 @@ class EditorComponent {
 
     this.#noteSub = noteModel.subscribe(e => this.#refresh(e));
 
-    pageEl.focus();
+    haikuReady$.subscribe(() => this.#focus());
     this.#setCaretAtTheEnd(pageEl);
+  }
+
+  #focus() {
+    const pageEl = this.#element.querySelector('.page');
+    pageEl.focus();
+    const range = document.createRange();
+    range.selectNodeContents(pageEl);
+    range.collapse(false);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  #hasFocus() {
+    const pageEl = this.#element.querySelector('.page');
+    return document.activeElement === pageEl;
   }
 
   #fullfillContent() {
@@ -43,8 +60,11 @@ class EditorComponent {
   }
 
   #refresh({ type }) {
-    if (type === 'refresh') {
+    if (!windowHasFocus() && type === 'change') {
       this.#fullfillContent();
+      if (this.#hasFocus()) {
+        this.#focus();
+      }
     }
   }
 

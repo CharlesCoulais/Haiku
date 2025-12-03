@@ -1,21 +1,23 @@
- import { SubscriberCollection } from '../libs/observable.js';
+ import { Subject } from 'shibirx';
  import StorageItem from '../libs/storage.js';
+import NoteLifecycleEvents$ from '../observables/NoteLifecycleEvents.js';
 
 
- const LAST_ID_ITEM = 'lastId';
+const LAST_ITEM_ID = 'lastId';
 
 class NoteModel {
-  #subscribers = new SubscriberCollection();
+  #events$;
   #storageItem;
-  #data;
   #id;
+
+  get #data() {
+    return this.#storageItem.value === StorageItem.EMPTY
+      ? null
+      : this.#storageItem.value;
+  }
 
   get id() {
     return this.#id;
-  }
-
-  get data() {
-    return this.#data;
   }
 
   get modified() {
@@ -35,9 +37,13 @@ class NoteModel {
   }
 
   set content(contentStr) {
-    this.#data.content = contentStr;
-    this.#data.modified = Date.now();
-    this.#save();
+    if (!this.isSaved) {
+      this.#registerItem();
+    }
+    this.#storageItem.value = {
+      content: contentStr,
+      modified: Date.now(),
+    };
   }
 
   get nodeContent() {
@@ -65,47 +71,20 @@ class NoteModel {
 
   constructor(noteId = null) {
     this.#id = noteId;
-    if (noteId !== null) {
-      this.#storageItem = new StorageItem(localStorage, noteId);
-      this.#data = {
-        content: this.#storageItem.value?.content,
-        modified: this.#storageItem.value?.modified,
-      };
-    } else {
-      this.#data = {
-        content: '',
-        modified: undefined,
-      };
-    }
-  }
-
-  refresh(blockBroadcast = false) {
-    if (!this.#storageItem) {
-      return;
-    }
-    this.#storageItem.refresh();
-    this.#data = {
-      content: this.#storageItem.value?.content,
-      modified: this.#storageItem.value?.modified,
-    };
-    this.#subscribers.emit({ type: 'refresh', data: { ...this.#data } }, blockBroadcast);
+    this.#storageItem = new StorageItem(localStorage, noteId, { content: '', modified: undefined });
+    this.#events$ = new NoteLifecycleEvents$(this.#storageItem.change$);
   }
 
   subscribe(subscriber) {
-    return this.#subscribers.subscribe(subscriber);
+    return this.#events$.subscribe(subscriber);
   }
 
-  delete(blockBroadcast = false) {
+  delete() {
     if (this.#data === null) {
       return;
     }
-    const data = { ...this.#data };
-    this.#data = null;
-    this.#subscribers.emit({ type: 'beforeDelete', data }, blockBroadcast);
-    this.#storageItem?.delete();
-    this.#subscribers.emit({ type: 'delete', data: null }, blockBroadcast);
-    this.#subscribers.destroy();
-    this.#subscribers = null;
+    this.#storageItem.remove();
+
   }
 
   #dateToFrString(timestamp) {
@@ -121,23 +100,20 @@ class NoteModel {
     return (num > 10 ? '' : '0') + num;
   }
 
-  #save() {
-    const savedInStorage = (this.#id !== null);
-    if (!savedInStorage) {
-      const lastIdItem = new StorageItem(localStorage, LAST_ID_ITEM, 0);
-      this.#id = ++lastIdItem.value;
-      this.#storageItem = new StorageItem(localStorage, this.#id);
-      NoteModel.#collection[this.#id] = this;
-      NoteModel.#onNewIdSubs.emit(this.#id);
-    }
-    this.#storageItem.value = { ...this.#data };
-    // If it just created the id in storage, does not send broadcast 'change' message:
-    // the channel already sent a 'create' message.
-    this.#subscribers.emit({ type: 'change', data: { ...this.#data } }, !savedInStorage);
+  #registerItem() {
+    this.#id = this.#generateId();
+    this.#storageItem.setKey(this.#id);
+    NoteModel.#collection[this.#id] = this;
+    NoteModel.#onNewIdSubs.next(this.#id);
+  }
+
+  #generateId() {
+    const lastIdItem = new StorageItem(localStorage, LAST_ITEM_ID, 0);
+    return ++lastIdItem.value;
   }
 
 
-  static #onNewIdSubs = new SubscriberCollection();
+  static #onNewIdSubs = new Subject();
   static #collection = {};
 
   static getInstance(noteId = null) {

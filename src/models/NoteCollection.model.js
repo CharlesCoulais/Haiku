@@ -1,14 +1,17 @@
 import NoteModel from './Note.model.js';
-import { SubscriberCollection } from '../libs/observable.js';
 import StorageItem from '../libs/storage.js';
+import NoteCollectionEvents$ from '../observables/NoteCollectionEvents.js';
 
 
 const COLLECTION_ITEM = 'noteList';
 
 class NoteCollectionModel {
-  #subscribers = new SubscriberCollection();
+  #events$;
   #storageItem;
-  #data = [];
+
+  get #data() {
+    return this.#storageItem.value;
+  }
 
   get list() {
     return [ ...this.#data ];
@@ -16,8 +19,8 @@ class NoteCollectionModel {
 
   constructor() {
     this.#storageItem = new StorageItem(localStorage, COLLECTION_ITEM, []);
-    this.#data = this.#storageItem.value;
-    this.#data.forEach(noteId => this.#subscribeToNoteChanges(noteId));
+    this.#events$ = new NoteCollectionEvents$(this.#storageItem.change$);
+    this.#data.forEach(noteId => this.#subscribeToNoteEvents(noteId));
 
     NoteModel.onNewId(noteId => this.addNoteId(noteId));
   }
@@ -33,50 +36,45 @@ class NoteCollectionModel {
     return NoteModel.getInstance(this.#data[0]);
   }
 
+  getNoteIndex(noteId) {
+    return noteId !== null
+      ? this.#data.findIndex(id => noteId === id)
+      : -1;
+  }
+
   subscribe(subscriber) {
-    return this.#subscribers.subscribe(subscriber);
+    return this.#events$.subscribe(subscriber);
   }
 
-  addNoteId(noteId, blockBroadcast = false) {
-    this.#data.unshift(noteId);
-    this.#save();
-    this.#subscribeToNoteChanges(noteId);
-    this.#subscribers.emit({ type: 'create', noteId }, blockBroadcast);
-  }
-
-  #subscribeToNoteChanges(noteId) {
+  #subscribeToNoteEvents(noteId) {
     const noteModel = NoteModel.getInstance(noteId);
-    noteModel.subscribe(({ type }, blockBroadcast) => {
+    noteModel.subscribe(({ type }) => {
       switch (type) {
-        case 'refresh':
+        case 'create':
         case 'change':
-          this.putNoteOnTop(noteId, blockBroadcast);
+          this.putNoteOnTop(noteId);
           break;
-        case 'delete':
-          this.removeNote(noteId, blockBroadcast);
+        case 'remove':
+          this.removeNote(noteId);
           break;
       }
     });
   }
 
-  putNoteOnTop(noteId, blockBroadcast = false) {
-    this.#data = [
+  addNoteId(noteId) {
+    this.#storageItem.value= [ noteId, ...this.#data];
+    this.#subscribeToNoteEvents(noteId);
+  }
+
+  putNoteOnTop(noteId) {
+    this.#storageItem.value = [
       noteId,
       ...this.#data.filter(id => id !== noteId),
     ];
-    this.#save();
-    this.#subscribers.emit({ type: 'change', noteId }, blockBroadcast);
   }
 
-  removeNote(noteId, blockBroadcast = false) {
-    this.#subscribers.emit({ type: 'beforeRemove', noteId }, blockBroadcast);
-    this.#data = this.#data.filter(id => id !== noteId);
-    this.#save();
-    this.#subscribers.emit({ type: 'remove', noteId }, blockBroadcast);
-  }
-
-  #save() {
-    this.#storageItem.value = [...this.#data];
+  removeNote(noteId) {
+    this.#storageItem.value = this.#data.filter(id => id !== noteId);
   }
 
   static #instance = null;

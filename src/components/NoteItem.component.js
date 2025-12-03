@@ -13,11 +13,11 @@ class NoteItemComponent {
     this.#noteModel$ = NoteModel.getInstance(noteId);
     this.#noteModel$.subscribe(({ type } )=> {
       switch (type) {
-        case 'refresh':
+        case 'create':
         case 'change':
           this.#render();
           break;
-        case 'delete':
+        case 'remove':
           this.#remove();
           break;
       }
@@ -46,13 +46,14 @@ class NoteItemComponent {
   }
 
   #render() {
-    if (this.#noteModel$.id) {
-      this.#element.setAttribute('id', 'noteItem-' + this.#noteModel$.id);
+    const { id, title, modified, isSaved } = this.#noteModel$;
+
+    if (id) {
+      this.#element.setAttribute('id', 'noteItem-' + id);
       this.#element.classList.remove('temp');
     } else {
       this.#element.classList.add('temp');
     }
-    const { title } = this.#noteModel$;
 
     if (title) {
       this.#element.classList.remove('empty');
@@ -60,8 +61,8 @@ class NoteItemComponent {
       this.#element.classList.add('empty');
     }
 
-    this.#element.querySelector('.note-title').textContent = title || (this.#noteModel$.isSaved ? '(vide)' : '(Nouvelle note)');
-    this.#element.querySelector('.note-modified-date').textContent = this.#noteModel$.modified;
+    this.#element.querySelector('.note-title').textContent = title || (isSaved ? '(vide)' : '(Nouvelle note)');
+    this.#element.querySelector('.note-modified-date').textContent = modified;
 
     return this.#element ;
   }

@@ -1,11 +1,11 @@
-import channel from './services/broadcastChannel.js';
 import LayoutComponent from './components/Layout.component.js';
+import { haikuReady$ } from './services/app.state.js';
 
 
 function main() {
-  channel.init();
   const layoutEl = new LayoutComponent();
   document.body.append(layoutEl);
+  haikuReady$.next(true);
 }
 
 main();

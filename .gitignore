@@ -1,3 +1,5 @@
 node_modules
 .npmrc
 .DS_Store
+.yalc
+yalc.lock

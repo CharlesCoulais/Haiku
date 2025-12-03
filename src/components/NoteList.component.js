@@ -3,6 +3,7 @@ import NoteItemComponent from "./NoteItem.component.js";
 import { currentNote$ } from "../services/app.state.js";
 import htmlToDom from "../utils/htmlToDOM.js";
 import template from  "./NoteList.template.html";
+import unfocusable from "../utils/unfocussable.js";
 
 
 
@@ -16,10 +17,10 @@ class NoteListComponent {
 
     this.#collectionModel$.subscribe(({ type, noteId }) => {
       switch (type) {
-        case 'create':
+        case 'note:create':
           this.#createNewNote(noteId);
           break;
-        case 'change':
+        case 'note:change':
           this.#putNoteOnTop(noteId);
           break;
       }
@@ -40,12 +41,17 @@ class NoteListComponent {
 
   #render() {
     const listEl = this.#element.querySelector('.note-list');
-    const noteEls = this.#collectionModel$.map((noteId, i) => new NoteItemComponent(noteId));
+    const noteEls = this.#collectionModel$.map(noteId => new NoteItemComponent(noteId));
     listEl.replaceChildren(...noteEls);
   }
 
   #setEventListeners() {
-    this.#element.querySelector('#newNoteBt').addEventListener('click', e => this.#createNewNote(null));
+    const newNoteBtEl = this.#element.querySelector('#newNoteBt');
+    unfocusable(newNoteBtEl);
+    newNoteBtEl.addEventListener('click', e => {
+      e.preventDefault();
+      this.#createNewNote(null);
+    });
   }
 
   #putNoteOnTop(noteId) {
