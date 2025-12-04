@@ -12,9 +12,9 @@ class NoteCollectionCursor$ extends Subject {
     const collectionModel = NoteCollectionModel.getInstance();
     this.set(collectionModel.getLastModified());
   }
-
+s
   set(noteModel) {
-    if (this.isCurrent(noteModel)) {
+    if (noteModel === null || this.isCurrent(noteModel)) {
       return;
     }
     this.#currentSub?.unsubscribe();
