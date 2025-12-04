@@ -9,6 +9,6 @@
   "permissions": ["activeTab", "scripting"],
   "background": {
     "baseUrl": "app/",
-    "service_worker": "app/background.js"
+    "service_worker": "app/assets/scripts/background.js"
   }
 }
